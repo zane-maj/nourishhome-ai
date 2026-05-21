@@ -1,0 +1,12 @@
+{
+  "name": "nourishhome-ai",
+  "version": "1.0.0",
+  "description": "NourishHome AI Proxy Server",
+  "main": "proxy_server.js",
+  "scripts": {
+    "start": "node \"proxy_server (2).js\""
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
