@@ -36,23 +36,20 @@ For fitness: real people with real lives, not gym obsessives.
 For supplements: honest and evidence-based only.`;
 
 const server = http.createServer((req, res) => {
-  // CORS - allow ALL origins
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key');
   res.setHeader('Access-Control-Max-Age', '86400');
 
-  // Handle preflight
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
     res.end();
     return;
   }
 
-  // Health check
   if (req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ ok: true, status: 'NourishHome AI Proxy is running', apiKey: API_KEY ? 'configured' : 'missing' }));
+    res.end(JSON.stringify({ ok: true, status: 'NourishHome AI Proxy running' }));
     return;
   }
 
@@ -66,9 +63,8 @@ const server = http.createServer((req, res) => {
   req.on('data', chunk => { body += chunk.toString(); });
   req.on('end', () => {
     let input;
-    try {
-      input = JSON.parse(body);
-    } catch (e) {
+    try { input = JSON.parse(body); }
+    catch (e) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Invalid JSON', ok: false }));
       return;
@@ -77,12 +73,12 @@ const server = http.createServer((req, res) => {
     const messages = input.messages || [];
     if (!messages.length) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'No messages provided', ok: false }));
+      res.end(JSON.stringify({ error: 'No messages', ok: false }));
       return;
     }
 
     const payload = JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-opus-4-5',
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
       messages: messages
@@ -119,7 +115,7 @@ const server = http.createServer((req, res) => {
           res.end(JSON.stringify({ reply: text, ok: true }));
         } catch (e) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'Failed to parse API response', ok: false }));
+          res.end(JSON.stringify({ error: 'Parse error: ' + e.message, ok: false }));
         }
       });
     });
